@@ -4,6 +4,7 @@ const resultText = document.querySelector('[result]');
 class Calculator{
   constructor(mathProblem){
     this.mathProblem = mathProblem;
+    this.result = "";
   }
   
 
@@ -11,6 +12,7 @@ class Calculator{
     this.mathProblem = this.multiplicationAndDivision(this.mathProblem);
     this.mathProblem = this.clearNegatives(this.mathProblem);
     this.mathProblem = this.additionAndSubstraction(this.mathProblem);
+    console.log(this.mathProblem)
   }
 
   multiplicationAndDivision(expression) {
@@ -68,12 +70,14 @@ class Calculator{
     let expressionArr = expression.split("");
 
     for(let i = 0; i < expressionArr.length; i++){
-
       if(expressionArr[i] === "-" && expressionArr[i - 1] === "+"){
         expressionArr.splice((i - 1), 1, "")
+      }else if(expressionArr[i] === "-" && expressionArr[i - 1] === "-"){
+        expressionArr.splice((i - 1), 1, "+")
+        i = i - 2
       };
-    };
 
+    };
     return expressionArr.join("");
   }
 
@@ -130,6 +134,7 @@ class Calculator{
         if(expression[i] === "-"){
           return i;
         }
+        i += 1;
       }
     }
 
@@ -176,5 +181,5 @@ class Calculator{
 
 }
 
-let calculator = new Calculator("-5")
+let calculator = new Calculator("-5--10")
 calculator.router()
