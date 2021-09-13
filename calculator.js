@@ -1,18 +1,65 @@
-const mathProblemText = document.querySelector('[math-problem]');
-const resultText = document.querySelector('[result]');
+
 
 class Calculator{
-  constructor(mathProblem){
-    this.mathProblem = mathProblem;
+  constructor(){
+    this.mathProblem = "";
     this.result = "";
   }
   
 
   router() {
-    this.mathProblem = this.multiplicationAndDivision(this.mathProblem);
-    this.mathProblem = this.clearNegatives(this.mathProblem);
-    this.mathProblem = this.additionAndSubstraction(this.mathProblem);
-    console.log(this.mathProblem)
+    this.result = this.validations(this.mathProblem);
+    this.result = this.multiplicationAndDivision(this.result);
+    this.result = this.clearNegatives(this.result);
+    this.result = this.additionAndSubstraction(this.result);
+  }
+
+  validations(expression){
+    expression = this.trimSpaces(expression);
+    this.operatorValidator(expression);
+    this.inputValidator(expression);
+
+    return expression;
+  }
+
+  inputValidator(expression){
+    const validInputs = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'];
+    const validOperators = ['-', '+', '/', '*'];
+
+    for(let i = 0; i < expression.length; i++){
+      if(!validInputs.includes(expression[i]) && !validOperators.includes(expression[i])){
+        console.log(i)
+        throw new Error('Invalid Input: Only 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,-, +, /, * are allowed')
+      }
+    }
+  }
+
+  trimSpaces(expression){
+    return expression.split(" ").join("");
+  }
+
+  operatorValidator(expression){
+    const validOperators = ['-', '+', '/', '*'];
+
+    let i = 0;
+    let operatorCount = 0;
+
+    while (i < expression.length){
+      if(validOperators.includes(expression[i])){
+        operatorCount += 1;
+      }else if(!isNaN(expression[i]) && operatorCount != 0){
+        operatorCount = 0;
+      }
+
+      if(operatorCount == 2 && expression[i] != "-"){
+        throw new SyntaxError('Second Consecutive Operator Can Only Be a -');
+      }else if(operatorCount >= 3){
+        throw new SyntaxError('Too Many Consecutive Operators');
+      };
+
+      i += 1;
+    }
+
   }
 
   multiplicationAndDivision(expression) {
@@ -179,7 +226,21 @@ class Calculator{
     return summation.toString();
   }
 
+  appendMathProblem(mathText){
+    this.mathProblem = mathText
+  }
+
 }
 
-let calculator = new Calculator("-5--10")
-calculator.router()
+const mathProblemText = document.querySelector('[math-problem]');
+const resultText = document.querySelector('[result]');
+const calculateButton = document.querySelector('[calculate]')
+
+let calculator = new Calculator()
+
+calculateButton.addEventListener('click', (event)=>{
+  event.preventDefault();
+  calculator.appendMathProblem(mathProblemText.value);
+  calculator.router();
+  resultText.innerText = calculator.result;
+})
