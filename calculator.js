@@ -18,6 +18,7 @@ class Calculator{
     expression = this.trimSpaces(expression);
     this.operatorValidator(expression);
     this.inputValidator(expression);
+    this.decimalValidator(expression);
 
     return expression;
   }
@@ -28,14 +29,39 @@ class Calculator{
 
     for(let i = 0; i < expression.length; i++){
       if(!validInputs.includes(expression[i]) && !validOperators.includes(expression[i])){
-        console.log(i)
-        throw new Error('Invalid Input: Only 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,-, +, /, * are allowed')
+        throw new Error('Invalid Input: Only 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,-, +, /, *, . are allowed')
       }
     }
   }
 
   trimSpaces(expression){
     return expression.split(" ").join("");
+  }
+
+  decimalValidator(expression){
+    let decimalFound = false;
+    const validOperators = ['-', '+', '/', '*'];
+
+    for(let i = 0; i < expression.length; i++){
+
+      if((expression[i] === "." && isNaN(expression[i + 1])) && (expression[i] === "." && isNaN(expression[i - 1]))){
+        throw new SyntaxError('Decimal Placement Error')
+      }else if(expression[i] === "."){
+
+        if(decimalFound){
+          throw new SyntaxError('Decimal Placement Error')
+        }else{
+          decimalFound = true;
+        }
+        
+      }else if(validOperators.includes(expression[i])){
+        if(decimalFound){
+          decimalFound = false;
+        }
+      }
+    };
+
+    return true;
   }
 
   operatorValidator(expression){
@@ -60,6 +86,7 @@ class Calculator{
       i += 1;
     }
 
+    return true;
   }
 
   multiplicationAndDivision(expression) {
